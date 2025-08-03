@@ -1,0 +1,22 @@
+[package]
+name = "msmtp-retry"
+version = "0.1.0"
+edition = "2024"
+authors = ["Sven Eckelmann <sven@narfation.org>"]
+description = "git-send-email/b4 helper which asks user to retry msmtp call on error"
+repository = "https://github.com/ecsv/msmtp-retry"
+license = "MIT"
+keywords = ["msmtp", "git", "b4", "git-send-email"]
+categories = ["command-line-utilities", "email"]
+
+[package.metadata.deb]
+depends = "$auto, msmtp"
+priority = "optional"
+section = "mail"
+
+[dependencies]
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1
