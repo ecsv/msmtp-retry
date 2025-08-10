@@ -5,6 +5,26 @@ use std::fs::File;
 use std::io::{self, BufRead, BufReader, Read, Write};
 use std::process::{Command, Stdio, exit};
 
+fn write_tty(text: &str) {
+    let mut tty = match File::options().write(true).open("/dev/tty") {
+        Ok(file) => file,
+        Err(e) => {
+            eprintln!("Error opening /dev/tty for writing: {e}");
+            exit(1);
+        }
+    };
+
+    if let Err(e) = tty.write(text.as_bytes()) {
+        eprintln!("Error writing to /dev/tty: {e}");
+        exit(1);
+    }
+
+    if let Err(e) = tty.flush() {
+        eprintln!("Error flushing /dev/tty: {e}");
+        exit(1);
+    }
+}
+
 fn main() {
     // Read all data from stdin
     let mut stdin_data = Vec::new();
@@ -57,12 +77,12 @@ fn main() {
         // Get the actual exit code
         let exit_code = exit_status.code().unwrap_or(-1);
 
-        // Ask user if they want to retry, reading from /dev/tty
+        // Ask user if they want to retry
         loop {
-            print!("msmtp failed with exit code {exit_code}. Retry? (y/n): ");
-            io::stdout().flush().unwrap();
+            let retry_request = format!("msmtp failed with exit code {exit_code}. Retry? (y/n): ");
+            write_tty(&retry_request);
 
-            // Read from /dev/tty
+            // Read answer from from /dev/tty
             let tty = match File::open("/dev/tty") {
                 Ok(file) => file,
                 Err(e) => {
