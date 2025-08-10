@@ -33,11 +33,11 @@ fn main() {
         };
 
         // Send the stdin data to msmtp
-        if let Some(mut stdin) = child.stdin.take() {
-            if let Err(e) = stdin.write_all(&stdin_data) {
-                eprintln!("Error writing to msmtp stdin: {e}");
-                exit(1);
-            }
+        if let Some(mut stdin) = child.stdin.take()
+            && let Err(e) = stdin.write_all(&stdin_data)
+        {
+            eprintln!("Error writing to msmtp stdin: {e}");
+            exit(1);
         }
 
         // Wait for msmtp to finish and get exit code
